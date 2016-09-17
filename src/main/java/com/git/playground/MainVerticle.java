@@ -8,7 +8,6 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.Message;
-import io.vertx.rxjava.core.http.HttpClient;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.handler.BodyHandler;
@@ -17,18 +16,14 @@ import rx.Observable;
 public class MainVerticle extends AbstractVerticle {
 
 	private static Logger log = LoggerFactory.getLogger(MainVerticle.class);
-	private static final int TEST_DEEP = 4;
 	private static final int TEST_LAYERS = 3;
-	private static final int TEST_CLONE = 17;
+	private static final int TEST_MESSAGES = 50;
 
 	@Override
 	public void start() throws Exception {
 		log.debug("start Docker Test");
 		startHttpServer();
-		for (int i = 1; i <= TEST_LAYERS; i++) {
-			final int x = i;
-			this.vertx.eventBus().<JsonObject> consumer("c." + i, msg -> consume(msg, "c." + x));
-		}
+		this.vertx.eventBus().<JsonObject> consumer("consume", msg -> consume(msg));
 		log.debug("done");
 	}
 
@@ -46,7 +41,7 @@ public class MainVerticle extends AbstractVerticle {
 		router.route().handler(BodyHandler.create());
 		router.get("/ping").handler(ctx -> {
 			final long startTime = System.currentTimeMillis();
-			vertx.eventBus().<JsonObject> send("c.1", new JsonObject(), ar -> {
+			vertx.eventBus().<JsonObject> send("consume", new JsonObject(), ar -> {
 				if (ar.succeeded()) {
 					long endTime = System.currentTimeMillis();
 					long duration = endTime - startTime;
@@ -61,14 +56,14 @@ public class MainVerticle extends AbstractVerticle {
 		return router;
 	}
 
-	private void consume(Message<JsonObject> msg, String nextEvent) {
+	private void consume(Message<JsonObject> msg) {
 		JsonObject body = msg.body();
 		int counter = body.getInteger("counter", 0);
-		if (counter < TEST_DEEP) {
+		if (counter < TEST_LAYERS) {
 			body.put("counter", counter + 1);
 			List<Observable<Message<JsonObject>>> list = new ArrayList<>();
-			for (int i = 0; i < TEST_CLONE; i++) {
-				list.add(this.vertx.eventBus().sendObservable(nextEvent, body));
+			for (int i = 0; i < TEST_MESSAGES; i++) {
+				list.add(this.vertx.eventBus().sendObservable("consume", body));
 			}
 			Observable
 				.zip(list, z -> {

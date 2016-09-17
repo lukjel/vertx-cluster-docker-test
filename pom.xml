@@ -41,11 +41,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.vertx</groupId>
-			<artifactId>vertx-hazelcast</artifactId>
-			<version>${vertx.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.vertx</groupId>
 			<artifactId>vertx-web</artifactId>
 			<version>${vertx.version}</version>
 		</dependency>
@@ -84,7 +79,31 @@
 			<artifactId>log4j-jcl</artifactId>
 			<version>${log4j-version}</version>
 		</dependency>
-	</dependencies>
+<!-- 
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-ignite</artifactId>
+			<version>${vertx.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-jgroups</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
+ -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-hazelcast</artifactId>
+			<version>${vertx.version}</version>
+		</dependency>
+<!-- 
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-zookeeper</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
+ -->	
+    </dependencies>
 
 	<build>
 		<pluginManagement>
@@ -131,7 +150,6 @@
 									<exclude>junit:junit</exclude>
 									<exclude>org.mvel:mvel2</exclude>
 									<exclude>log4j:log4j</exclude>
-									<exclude>org.slf4j:slf4j-api</exclude>
 								</excludes>
 							</artifactSet>
 							<outputFile>${project.build.directory}/${project.artifactId}-fat.jar</outputFile>
