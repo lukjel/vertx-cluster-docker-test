@@ -16,7 +16,13 @@ import rx.Observable;
 public class MainVerticle extends AbstractVerticle {
 
 	private static Logger log = LoggerFactory.getLogger(MainVerticle.class);
-	private static final int TEST_LAYERS = 3;
+	/**
+	 *  how many messages are send in chain
+	 */
+	private static final int TEST_JUMPS = 3;
+	/**
+	 *  How many messages will be produced on each step.
+	 */
 	private static final int TEST_MESSAGES = 50;
 
 	@Override
@@ -46,20 +52,20 @@ public class MainVerticle extends AbstractVerticle {
 					long endTime = System.currentTimeMillis();
 					long duration = endTime - startTime;
 					int c = ar.result().body().getInteger("c", 1);
-					ctx.response().end("Time for processing " + c + " messages in " + duration + "ms == " + (c / duration) + " events/ms");
+					ctx.response().end("Time for processing " + c + " messages in " + duration + "ms == " + (c / duration) + " events/ms\n");
 				} else {
-					ctx.response().end("Some problem: " + ar.cause());
+					ctx.response().end("Some problem: " + ar.cause() + "\n");
 				}
 			});
 		});
-		router.get("/*").handler(ctx -> ctx.response().end("OK"));
+		router.get("/*").handler(ctx -> ctx.response().end("OK\n"));
 		return router;
 	}
 
 	private void consume(Message<JsonObject> msg) {
 		JsonObject body = msg.body();
 		int counter = body.getInteger("counter", 0);
-		if (counter < TEST_LAYERS) {
+		if (counter < TEST_JUMPS) {
 			body.put("counter", counter + 1);
 			List<Observable<Message<JsonObject>>> list = new ArrayList<>();
 			for (int i = 0; i < TEST_MESSAGES; i++) {
