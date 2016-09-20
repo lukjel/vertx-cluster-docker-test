@@ -12,5 +12,4 @@ COPY target/$VERTICLE_FILE $VERTICLE_HOME/
 
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
-ENTRYPOINT ["sh", "-c"]
-CMD ["java -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory -jar $VERTICLE_FILE -cluster"]
+CMD ["/usr/bin/java","-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory", "-jar", "$VERTICLE_FILE","-cluster"]
