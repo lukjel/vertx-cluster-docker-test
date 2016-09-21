@@ -8,8 +8,8 @@ ENV VERTICLE_HOME /usr/verticles
 EXPOSE 8080
 
 # Copy your fat jar to the container
-COPY target/vertx-docker-test-fat.jar $VERTICLE_HOME/
+COPY target/$VERTICLE_FILE $VERTICLE_HOME/
 
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
-CMD ["/usr/bin/java","-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory", "-jar", "vertx-docker-test-fat.jar","-cluster"]
+CMD ["/usr/bin/java","-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory", "-Dhazelcast.max.no.heartbeat.seconds=5", "-jar", $VERTICLE_FILE,"-cluster"]
